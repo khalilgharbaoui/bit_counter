@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+class BitCounter
+  def usage
+    warn <<-EOF
+             --------------------------------------------------------------
+             COMMANDLINE:
+             --------------------------------------------------------------
+
+             USAGE:    bit_counter filepath length offset
+
+             EXAMPLES:
+                       bit_counter ./rubber-duck-image.jpg 200 3
+
+                       bit_counter rubber-duck-image.jpg 200 3
+
+             ℹ️        lenght and offset are optional.
+             ⚠️        filepath is a must!
+
+             --------------------------------------------------------------
+             CONSOLE: (irb or pry)
+             --------------------------------------------------------------
+
+             USAGE:    BitCounter.count_bits, filepath, length, offset
+
+             EXAMPLES: load './bit_counter'
+
+                       BitCounter.count_bits, "./rubber-duck-image.jpg", 5, 3
+
+                       BitCounter.count_bits, "rubber-duck-image.jpg", 5, 3
+
+             ℹ️        lenght and offset are optional.
+             ⚠️        filepath is a must!
+
+             --------------------------------------------------------------
+             maintainer: Khalil Gharbaoui <khalilgharbaoui@hotmail.com>
+    EOF
+  end
+
+  attr_accessor :filepath, :length, :offset
+
+  def initialize(filepath, length, offset)
+    @filepath = filepath if filepath
+    @length = length if length
+    @offset = offset if offset
+    raise ArgumentError if @filepath.nil?
+  rescue ArgumentError
+    usage
+  end
+
+  def self.count_bits(filepath=nil, length=nil, offset=nil)
+    new(filepath, length, offset).send(:count_bits)
+  end
+
+  private
+
+  def count_bits
+    %w[0 1].each do |bit|
+      warn "Found #{bits.count(bit)} bits set to #{bit}"
+    end
+    warn "Total of #{bits.size} bits found!"
+  end
+
+  def bits
+    IO.binread(filepath, length, offset).unpack('B*')[0]
+  end
+
+  if $PROGRAM_NAME == __FILE__
+    f = (ARGV[0].to_s if ARGV[0])
+    l = (ARGV[1].to_i if ARGV[1])
+    o = (ARGV[2].to_i if ARGV[2])
+    BitCounter.count_bits(f, l, o)
+  end
+end
